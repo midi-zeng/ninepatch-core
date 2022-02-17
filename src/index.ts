@@ -28,18 +28,12 @@ export default class NinePatchCore {
     height: 0
   }
 
-  constructor(options: type.NinePatchPreloadReq) {
-    if (!options?.src && !options?.file) {
-      throw new Error('Parameter is invalid.')
+  constructor(src: string) {
+    if (!src) {
+      throw new Error('missing src parameter')
     }
 
-    if (options?.src) {
-      this.src = options.src
-    }
-
-    if (options?.file) {
-      this.file = options.file
-    }
+    this.src = src
   }
 
   async getFile(): Promise<File> {
@@ -92,7 +86,7 @@ export default class NinePatchCore {
 
     const res = await this.wasNotSerialized()
     if (res?.status) {
-      return type.NinePatchImageType.Noterialized
+      return type.NinePatchImageType.NotSerialized
     }
 
     return type.NinePatchImageType.None
@@ -145,7 +139,7 @@ export default class NinePatchCore {
       await this.getSerializedChunkData()
     }
 
-    if (imageType === type.NinePatchImageType.Noterialized) {
+    if (imageType === type.NinePatchImageType.NotSerialized) {
       await this.getNotSerializedChunkData(property.Width, property.Height)
       this.chunkData.clipPath = `1px` // 把点九图原图周边的1像素剪裁掉
     }

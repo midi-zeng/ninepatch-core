@@ -12,7 +12,7 @@ yarn add ninepatch-core
 ```typescript
 enum NinePatchImageType {
   None = 0, // 非点九图
-  Noterialized = 1, // 点九图原图(带黑边)
+  NotSerialized = 1, // 点九图原图(带黑边)
   Serialized = 2 // 经过AAPT编译后的点九图
 }
 
@@ -55,7 +55,7 @@ interface NpTcChunkType {
 }
 
 // 实例化解析器，可以传src或File对象，二选一
-const np = new NinePatchPreloader({ src: '图片地址', file: '图片File对象' })
+const np = new NinePatchCoreer({ src: '图片地址', file: '图片File对象' })
 
 async function boostrap() {
   // chunk相关数据

@@ -1,4 +1,4 @@
-import { NinePatchPreload } from '../index'
+import { NinePatchCore } from '../index'
 import * as util from '../utils'
 
 const src = 'https://o-static.ihago.net/ikxd/8ee25c755010c886014ce2e92b04aee9/feichedianjiu.png'
@@ -7,7 +7,7 @@ const compileSrc =
 
 test('未传src或File对象', () => {
   try {
-    const nnp = new NinePatchPreload({})
+    const nnp = new NinePatchCore({})
     expect(typeof nnp).toEqual('function')
   } catch (error) {
     expect(Error).toEqual(Error)
@@ -17,7 +17,7 @@ test('未传src或File对象', () => {
 test('getChunkData', async () => {
   try {
     const file = await util.getFileByUrl(compileSrc)
-    const npp = new NinePatchPreload({ file })
+    const npp = new NinePatchCore({ file })
     const res = await npp.getChunkData()
     expect(res?.padding?.bottom !== undefined).toEqual(true)
   } catch (error) {
@@ -27,7 +27,7 @@ test('getChunkData', async () => {
 
 test('wasNotSerialized', async () => {
   try {
-    const npp = new NinePatchPreload({ src })
+    const npp = new NinePatchCore({ src })
     const res = await npp.wasNotSerialized()
     expect(res?.status).toEqual(true)
   } catch (error) {

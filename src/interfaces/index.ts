@@ -19,14 +19,9 @@ export interface NpTcChunkType {
   clipPath?: string // 点九图原图剪裁像素 1px
 }
 
-export interface NinePatchPreloadReq {
-  src?: string
-  file?: File
-}
-
 export enum NinePatchImageType {
   None = 0, // 非点九图
-  Noterialized = 1, // 点九图原图(带黑边)
+  NotSerialized = 1, // 点九图原图(带黑边)
   Serialized = 2 // 经过AAPT编译后的点九图
 }
 

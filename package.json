@@ -10,7 +10,7 @@
     "build": "export NODE_ENV=prod && rollup -c rollup.config.js && yarn build:types",
     "test": "cross-env yarn lint && jest",
     "lint": "eslint -c .eslintrc.js 'src/**/*.ts' --fix",
-    "release:dev": "yarn build && sudo npm link",
+    "local": "yarn build && sudo npm link",
     "release": "yarn build && semantic-release",
     "build:types": "tsc",
     "login": "npm login",
