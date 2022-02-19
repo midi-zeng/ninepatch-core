@@ -89,13 +89,14 @@ export function wasNotSerializedNinePatch(
   )
 
   return Object.keys(sidesData).reduce(
-    (acc: any, k) => {
+    (acc: any, k: string) => {
       const sideData = (sidesData as any)?.[k] ?? []
       const sidePixelsData = getNinePatchSidePixelsData(sideData, type.PixelsSideLabel[k])
 
       if (!sidePixelsData?.status) {
+        const msg = sidePixelsData?.msg ?? []
         acc.status = false
-        acc?.msg?.push(...(sidePixelsData?.msg ?? []))
+        acc?.msg?.push(...msg)
       }
 
       return acc

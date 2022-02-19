@@ -2,10 +2,7 @@ import * as util from '../utils'
 import 'jest-canvas-mock'
 import * as type from '../interfaces'
 
-const orginSrc =
-  'https://o-static.ihago.net/ikxd/8ee25c755010c886014ce2e92b04aee9/feichedianjiu.png'
-const src =
-  'https://o-static.ihago.net/ikxd/09b5414978d0228b71109a185648a730/compile.feichedianjiu.png'
+const orgin = require('./images/orgin.png')
 
 test('rgba转hex', () => {
   const color = util.rgba2hex('51,51,51,255')
@@ -20,7 +17,7 @@ describe('file.ts', () => {
   })
 
   test('getFileByUrl', async () => {
-    const file = await util.getFileByUrl(src)
+    const file = await util.getFileByUrl(orgin)
     expect(util.isFile(file)).toEqual(true)
   })
 
@@ -34,7 +31,7 @@ describe('file.ts', () => {
 describe('image.ts', () => {
   test('getImageProperty', async () => {
     try {
-      const file = await util.getFileByUrl(orginSrc)
+      const file = await util.getFileByUrl(orgin)
       const buffer = await util.getFileArrayBuffer(file)
       const res = util.getImageProperty(buffer)
 
@@ -67,13 +64,13 @@ describe('image.ts', () => {
     }
 
     global.URL.createObjectURL = () => {
-      return orginSrc
+      return orgin
     }
 
     // Jest URL.createObjectURL is not a function
     // https://stackoverflow.com/questions/52968969/jest-url-createobjecturl-is-not-a-function
 
-    const file = await util.getFileByUrl(orginSrc)
+    const file = await util.getFileByUrl(orgin)
     const res = await util.getImagePixels(file, 182, 122)
     expect(res.length > 0).toEqual(true)
   })
