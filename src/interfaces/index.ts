@@ -16,11 +16,11 @@ export interface NpTcChunkType {
   yDivs: NpTcChunkDiv
   width?: number
   height?: number
-  clipPath?: string // 点九图原图剪裁像素 1px
+  clipPath?: number // 点九图原图剪裁像素
 }
 
 export enum NinePatchImageType {
-  None = 0, // 非点九图
+  Normal = 0, // 非点九图
   NotSerialized = 1, // 点九图原图(带黑边)
   Serialized = 2 // 经过AAPT编译后的点九图
 }
@@ -92,6 +92,20 @@ export interface Chunk {
 }
 
 // https://android.googlesource.com/platform/frameworks/base.git/+/master/tools/aapt/Images.cpp#1249
-export enum NinePatchChunkName {
-  Name = 'npTc'
+export const NinePatchChunkName = 'npTc'
+
+/**
+ * @name npTc chunk数据位置
+ * @link https://github.com/Anatolii/NinePatchChunk/blob/master/NinePatchChunk/Library/src/main/java/ua/anatolii/graphics/ninepatch/NinePatchChunk.java#L95
+ */
+
+ export enum NpTcChunkPosition {
+  PaddingLeft = 15,
+  PaddingRight = 19,
+  PaddingTop = 23,
+  PaddingBottom = 27,
+  xDivsStart = 35,
+  xDivsStop = 39,
+  yDivsStart = 43,
+  yDivsStop = 47
 }

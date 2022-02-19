@@ -1,11 +1,10 @@
 import extract from 'png-chunks-extract'
-import { NpTcChunkPosition } from './config'
 import * as type from './interfaces'
-import * as util from './utils'
+import * as utils from './utils'
 
 export default class NinePatchCore {
   private readonly src: string = ''
-  private canvasCtx: CanvasRenderingContext2D | null = null
+  private canvasContext: CanvasRenderingContext2D | null = null
   private file: File = new File([], '')
   private buffer: ArrayBuffer = new ArrayBuffer(0)
 
@@ -29,36 +28,36 @@ export default class NinePatchCore {
   }
 
   constructor(src: string) {
-    if (!src) {
+    if (src === undefined || src === null) {
       throw new Error('missing src parameter')
     }
 
     this.src = src
   }
 
-  async getFile(): Promise<File> {
+  private async getFile(): Promise<File> {
     if (this.file.size === 0) {
-      this.file = await util.getFileByUrl(this.src)
+      this.file = await utils.getFileByUrl(this.src)
     }
 
     return this.file
   }
 
-  async getBuffer(): Promise<ArrayBuffer> {
+  private async getBuffer(): Promise<ArrayBuffer> {
     if (this.buffer.byteLength === 0) {
       const file = await this.getFile()
-      this.buffer = await util.getFileArrayBuffer(file)
+      this.buffer = await utils.getFileArrayBuffer(file)
     }
 
     return this.buffer
   }
 
-  async getCanvasCtx(): Promise<CanvasRenderingContext2D> {
-    if (this.canvasCtx !== null) {
-      return this.canvasCtx
+  private async getCanvasContext(): Promise<CanvasRenderingContext2D> {
+    if (this.canvasContext !== null) {
+      return this.canvasContext
     }
 
-    this.canvasCtx = await new Promise(resolve => {
+    this.canvasContext = await new Promise(resolve => {
       const image = new Image()
       image.crossOrigin = 'Anonymous'
 
@@ -74,7 +73,7 @@ export default class NinePatchCore {
       image.src = this.src
     })
 
-    return this.canvasCtx as CanvasRenderingContext2D
+    return this.canvasContext as CanvasRenderingContext2D
   }
 
   async getImageType(): Promise<type.NinePatchImageType> {
@@ -89,7 +88,7 @@ export default class NinePatchCore {
       return type.NinePatchImageType.NotSerialized
     }
 
-    return type.NinePatchImageType.None
+    return type.NinePatchImageType.Normal
   }
 
   /**
@@ -99,7 +98,7 @@ export default class NinePatchCore {
   async wasSerialized(): Promise<boolean> {
     const buffer = await this.getBuffer()
     const chunks = extract(new Uint8Array(buffer))
-    const npTc = chunks.find((chunk: any) => chunk.name === type.NinePatchChunkName.Name)
+    const npTc = chunks.find((chunk: any) => chunk.name === type.NinePatchChunkName)
 
     return npTc?.data?.length > 0
   }
@@ -111,11 +110,11 @@ export default class NinePatchCore {
   async wasNotSerialized(): Promise<type.CheckColorRes> {
     const buffer = await this.getBuffer()
     const file = await this.getFile()
-    const property = util.getImageProperty(buffer)
+    const property = utils.getImageProperty(buffer)
 
     if (property.Hex === type.ImageHax.PNG) {
-      const data = await util.getImagePixels(file, property.Width, property.Height)
-      const res = util.wasNotSerializedNinePatch(data, property.Width, property.Height)
+      const data = await utils.getImagePixels(file, property.Width, property.Height)
+      const res = utils.wasNotSerializedNinePatch(data, property.Width, property.Height)
 
       return res
     }
@@ -133,7 +132,7 @@ export default class NinePatchCore {
   async getChunkData(): Promise<type.NpTcChunkType> {
     const buffer = await this.getBuffer()
     const imageType: type.NinePatchImageType = await this.getImageType()
-    const property = util.getImageProperty(buffer)
+    const property = utils.getImageProperty(buffer)
 
     if (imageType === type.NinePatchImageType.Serialized) {
       await this.getSerializedChunkData()
@@ -141,7 +140,7 @@ export default class NinePatchCore {
 
     if (imageType === type.NinePatchImageType.NotSerialized) {
       await this.getNotSerializedChunkData(property.Width, property.Height)
-      this.chunkData.clipPath = `1px` // 把点九图原图周边的1像素剪裁掉
+      this.chunkData.clipPath = 1 // 把点九图原图周边的1像素剪裁掉
     }
 
     this.chunkData.width = property?.Width ?? 0
@@ -157,43 +156,43 @@ export default class NinePatchCore {
     const buffer = await this.getBuffer()
     const chunks = extract(new Uint8Array(buffer))
 
-    const npTc = chunks.find((chunk: type.Chunk) => chunk.name === type.NinePatchChunkName.Name)
+    const npTc = chunks.find((chunk: type.Chunk) => chunk.name === type.NinePatchChunkName)
 
     this.chunkData.padding = {
-      left: npTc?.data[NpTcChunkPosition.PaddingLeft],
-      right: npTc?.data[NpTcChunkPosition.PaddingRight],
-      top: npTc?.data[NpTcChunkPosition.PaddingTop],
-      bottom: npTc?.data[NpTcChunkPosition.PaddingBottom]
+      left: npTc?.data[type.NpTcChunkPosition.PaddingLeft],
+      right: npTc?.data[type.NpTcChunkPosition.PaddingRight],
+      top: npTc?.data[type.NpTcChunkPosition.PaddingTop],
+      bottom: npTc?.data[type.NpTcChunkPosition.PaddingBottom]
     }
 
     this.chunkData.xDivs = {
-      start: npTc?.data[NpTcChunkPosition.xDivsStart],
-      stop: npTc?.data[NpTcChunkPosition.xDivsStop]
+      start: npTc?.data[type.NpTcChunkPosition.xDivsStart],
+      stop: npTc?.data[type.NpTcChunkPosition.xDivsStop]
     }
 
     this.chunkData.yDivs = {
-      start: npTc?.data[NpTcChunkPosition.yDivsStart],
-      stop: npTc?.data[NpTcChunkPosition.yDivsStop]
+      start: npTc?.data[type.NpTcChunkPosition.yDivsStart],
+      stop: npTc?.data[type.NpTcChunkPosition.yDivsStop]
     }
 
     return this.chunkData
   }
 
   async getNotSerializedChunkData(width: number, height: number): Promise<type.NpTcChunkType> {
-    const context = await this.getCanvasCtx()
+    const context = await this.getCanvasContext()
 
     // 获取上边框分区
     const topSide = Array.from(context.getImageData(0, 0, width - 1, 1).data)
-    const cornerColor = util.rgba2Color(topSide[0], topSide[1], topSide[2], topSide[3])
-    const topSegment = util.getSegment(topSide.slice(4), cornerColor)
+    const cornerColor = utils.rgba2Color(topSide[0], topSide[1], topSide[2], topSide[3])
+    const topSegment = utils.getSegment(topSide.slice(4), cornerColor)
 
     // 获取左边框分区
     const leftSide = Array.from(context.getImageData(0, 1, 1, height - 2).data)
-    const leftSegment = util.getSegment(leftSide, cornerColor)
+    const leftSegment = utils.getSegment(leftSide, cornerColor)
 
     // 获取右边框分区
     const rightSide = Array.from(context.getImageData(width - 1, 1, 1, height - 2).data)
-    const rightSegment = util.getSegment(rightSide, cornerColor)
+    const rightSegment = utils.getSegment(rightSide, cornerColor)
     const firstRightSegment = rightSegment[0]
     const lastRightSegment = rightSegment[rightSegment.length - 1]
     this.chunkData.padding.top =
@@ -203,7 +202,7 @@ export default class NinePatchCore {
 
     // 获取下边框分区
     const bottomSide = Array.from(context.getImageData(1, height - 1, width - 2, 1).data)
-    const bottomSegment = util.getSegment(bottomSide, cornerColor)
+    const bottomSegment = utils.getSegment(bottomSide, cornerColor)
     const firstBottomSegment = bottomSegment[0]
     const lastBottomSegment = bottomSegment[bottomSegment.length - 1]
     this.chunkData.padding.left =
@@ -211,8 +210,8 @@ export default class NinePatchCore {
     this.chunkData.padding.right =
       lastBottomSegment.type === type.SegmentColorType.Black ? 0 : lastBottomSegment.width
 
-    this.chunkData.xDivs = util.getBlackLineData(topSegment)
-    this.chunkData.yDivs = util.getBlackLineData(leftSegment)
+    this.chunkData.xDivs = utils.getBlackLineData(topSegment)
+    this.chunkData.yDivs = utils.getBlackLineData(leftSegment)
     return this.chunkData
   }
 }

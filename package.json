@@ -1,6 +1,6 @@
 {
   "name": "ninepatch-core",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "ninepatch npTc chunk parser",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -14,12 +14,12 @@
     "release": "yarn build && semantic-release",
     "build:types": "tsc",
     "login": "npm login",
-    "publish": "npm publish"
+    "pb": "yarn build && yarn publish"
   },
   "author": "zengfukun@foxmail.com",
   "license": "ISC",
   "maintainers": [
-    "midi-zeng"
+    "midi_zeng"
   ],
   "devDependencies": {
     "@babel/core": "^7.9.0",
