@@ -2,7 +2,7 @@ import extract from 'png-chunks-extract'
 import * as type from './interfaces'
 import * as utils from './utils'
 
-export default class NinePatchCore {
+class NinePatchCore {
   private readonly src: string = ''
   private canvasContext: CanvasRenderingContext2D | null = null
   private file: File = new File([], '')
